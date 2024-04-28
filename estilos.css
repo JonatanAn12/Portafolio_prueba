@@ -6,20 +6,16 @@
     font-family: 'Montserrat';
 }
 
-html {
-    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url("img/descarga.jpg");
-    background-size: cover;
-    background-position: center center;
-    height: 100vh;
-}
-
 body {
     font-family: "Popins", sans-serif;
     font-size: 1,2rem;
     color: #fff;
     min-height: 100vh;
     padding: 20px;
-    
+    background: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url("./img/descarga.jpg");
+    background-size: cover;
+    background-position: center center;
+    height: 100vh;
 }
 
 .grid-container > * {
@@ -150,7 +146,6 @@ body {
 }
 
 .contenedor-skills {
-    background: linear-gradient(#9800B7, rgba(33,16,16,.8)),;
     background-attachment: fixed;
     background-repeat: no-repeat;
     background-size: cover;
