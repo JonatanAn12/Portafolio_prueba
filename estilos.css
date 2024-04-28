@@ -81,7 +81,7 @@ body {
         grid-template: 
         "header navbar" 50px
         "header navbar" 50px
-        "sidebar main"  auto
+        "sidebar main section"  auto
         "footer footer" 100px/
         200px auto;
     }
