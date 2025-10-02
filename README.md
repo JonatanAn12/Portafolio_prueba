@@ -100,6 +100,50 @@ docker run -d -p 8080:80 --name curriculum-portfolio curriculum-portfolio
 - ✅ Puerto 8080 expuesto para acceso local
 - ✅ Configuración de proxy reverso
 
+## Gestión de Usuarios y Seguridad
+
+### Acceso como Root al Contenedor
+```bash
+# Acceder como root (por defecto)
+docker exec -it curriculum-portfolio sh
+
+# Verificar usuario actual
+whoami
+
+# Ver usuarios del sistema
+cat /etc/passwd
+```
+
+### Crear Usuario No Privilegiado (Recomendado)
+Para mayor seguridad, puedes modificar el Dockerfile:
+
+```dockerfile
+# Agregar después de FROM nginx:alpine
+RUN addgroup -g 1001 -S appuser && \
+    adduser -u 1001 -S appuser -G appuser
+
+# Cambiar permisos de archivos
+RUN chown -R appuser:appuser /usr/share/nginx/html
+
+# Cambiar a usuario no privilegiado
+USER appuser
+```
+
+### Comandos de Administración en el Contenedor
+```bash
+# Instalar paquetes (como root)
+docker exec -u root curriculum-portfolio apk add --no-cache nano
+
+# Ejecutar comandos como usuario específico
+docker exec -u appuser curriculum-portfolio whoami
+
+# Ver procesos en el contenedor
+docker exec curriculum-portfolio ps aux
+
+# Ver uso de recursos
+docker stats curriculum-portfolio
+```
+
 ## Solución de Problemas
 
 ### Error 404 en archivos CSS/imágenes
@@ -118,12 +162,78 @@ Si los archivos estáticos no cargan:
 docker exec curriculum-portfolio cat /etc/nginx/conf.d/default.conf
 ```
 
+### Problemas de Permisos
+```bash
+# Verificar permisos de archivos
+docker exec curriculum-portfolio ls -la /usr/share/nginx/html/
+
+# Corregir permisos si es necesario
+docker exec -u root curriculum-portfolio chown -R nginx:nginx /usr/share/nginx/html/
+```
+
+## Comandos Docker Avanzados
+
+### Inspección y Monitoreo
+```bash
+# Inspeccionar contenedor
+docker inspect curriculum-portfolio
+
+# Ver uso de recursos en tiempo real
+docker stats curriculum-portfolio
+
+# Ver puertos expuestos
+docker port curriculum-portfolio
+
+# Ver historial de la imagen
+docker history curriculum-portfolio
+```
+
+### Backup y Restauración
+```bash
+# Crear backup del contenedor
+docker commit curriculum-portfolio curriculum-backup
+
+# Exportar imagen
+docker save curriculum-portfolio > curriculum.tar
+
+# Importar imagen
+docker load < curriculum.tar
+
+# Copiar archivos desde/hacia contenedor
+docker cp archivo.txt curriculum-portfolio:/tmp/
+docker cp curriculum-portfolio:/tmp/archivo.txt ./
+```
+
+### Limpieza del Sistema
+```bash
+# Limpiar todo lo no usado
+docker system prune -a
+
+# Limpiar solo imágenes
+docker image prune
+
+# Limpiar contenedores parados
+docker container prune
+
+# Ver espacio usado por Docker
+docker system df
+```
+
 ## Tecnologías Utilizadas
 
 - **Docker**: Containerización
 - **Nginx**: Servidor web y proxy reverso
 - **HTML/CSS**: Frontend del curriculum
 - **Alpine Linux**: Sistema operativo base ligero
+
+## Buenas Prácticas de Seguridad
+
+- ✅ Usar imágenes oficiales (nginx:alpine)
+- ✅ No ejecutar como root en producción
+- ✅ Usar .dockerignore para excluir archivos sensibles
+- ✅ Mantener imágenes actualizadas
+- ✅ Limitar recursos del contenedor
+- ✅ Usar redes personalizadas en producción
 
 ## Autor
 
