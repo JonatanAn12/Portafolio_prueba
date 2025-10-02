@@ -43,19 +43,21 @@ server {
     server_name localhost;
     
     location / {
-        root /usr/share/nginx/html;
+        root /usr/share/nginx/html;  # OBLIGATORIO: Define dónde buscar archivos
         index index.html;
         try_files $uri $uri/ /index.html;
     }
     
     # Configuración para archivos estáticos
     location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg)$ {
-        root /usr/share/nginx/html;
+        root /usr/share/nginx/html;  # CRÍTICO: Sin esto = Error 404
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
 }
 ```
+
+**⚠️ IMPORTANTE**: La directiva `root` es OBLIGATORIA en cada bloque `location`. Sin ella, nginx no sabe dónde buscar los archivos y devuelve error 404.
 
 ## Comandos para Ejecutar
 
@@ -160,6 +162,26 @@ Si los archivos estáticos no cargan:
 ### Verificar configuración de Nginx
 ```bash
 docker exec curriculum-portfolio cat /etc/nginx/conf.d/default.conf
+```
+
+### Configuración de Nginx - Directivas Importantes
+
+**Directiva `root`**: 
+- ✅ **OBLIGATORIA** en cada bloque `location`
+- ❌ **Sin `root`** = Error 404 en archivos estáticos
+- 📁 Define el directorio base donde nginx busca archivos
+
+```nginx
+# CORRECTO - Con directiva root
+location ~* \.(css|js|png|jpg)$ {
+    root /usr/share/nginx/html;  # ✅ Necesario
+    expires 1y;
+}
+
+# INCORRECTO - Sin directiva root
+location ~* \.(css|js|png|jpg)$ {
+    expires 1y;  # ❌ Error 404 garantizado
+}
 ```
 
 ### Problemas de Permisos
